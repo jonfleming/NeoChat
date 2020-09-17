@@ -56,7 +56,7 @@ class sentenceClassifier {
         } 
 
         query = `MATCH (s:Lemma {name: '${noun}', pos:'n'})-[r]->(n:Synset)` +
-        ` RETURN n AS node LIMIT $this.limit}` +
+        ` RETURN n AS node LIMIT ${this.limit}` +
         ` UNION ALL MATCH (s:Subject {id: '${noun}', pos:'n'})` +
         ` RETURN s AS node LIMIT ${this.limit}`;
         
@@ -73,7 +73,6 @@ class sentenceClassifier {
         let noun = segments[0].trim();
         let indefiniteArticle = '';
         let determiner;
-        let query;
 
         if (this.hasDeterminer(noun)) {
             ({noun, determiner} = this.stripDeterminer(noun));          
@@ -85,22 +84,35 @@ class sentenceClassifier {
         const definition = `${article}${predicate}`;
         
         if (determiner) {
-            const existingRecordsQuery = `match (s:Synset) where s.id starts with '${noun}.' return collect(right(s.id, 2));`;
-            const records = await this.database.runQuery(existingRecordsQuery);
-            const nextId = '.01';
-            const ids = records[0]._fields[0].sort();
-
+            const existingSynsets = `MATCH (s:Synset) WHERE s.id STARTS WITH '${noun}.' RETURN COLLECT(right(s.id, 2));`;
+            const SynsetRecords = await this.database.runQuery(existingSynsets);
+            const ids = SynsetRecords[0]._fields[0].sort();
+            let nextId = '.01';
+            
             if(ids.length > 0) {
-                nextId = string(parseInt(ids[ids.length-1]) + 1).padStart(2,'0');
+               nextId = (parseInt(ids[ids.length-1]) + 1).toString().padStart(2,'0');
             }
             
-            query = `CREATE (s:Synset {id: '${noun}.n.${nextId}', name: '${noun}', pos: 'n', definition: '${definition}', added:'true'}) RETURN s;`        
+            const existingLemma = `MATCH (n:Lemma {id: '${noun}.n'} ) RETURN n`;
+            const records = await this.database.runQuery(existingLemma);
+
+            if (records.length > 0) {
+                const lemma = records[0]._fields[0];
+                // Add a new Synset and Relationship
+                const queries = [`CREATE (s:Synset {id: '${noun}.n.${nextId}', name: '${noun}', pos: 'n', definition: '${definition}', added:'true'}) RETURN s;`, 
+                    `MATCH (n:Lemma {name: '${noun}', pos:'n'}) ` +
+                    `MATCH (s: Synset { id: '${noun}.n.${nextId}' }) ` +
+                    `MERGE(n) - [r: IsA { dataset: 'custom', weight: 1.0, added: 'true' }] -> (s) RETURN s;`];
+                await this.database.runList(queries);
+            }
+            
             indefiniteArticle = `${determiner} `;
         } else {
-            query = `CREATE (s:Subject {id: '${noun}', pos: 'n', definition: '${definition}'}) RETURN s;`        
+            const query = `CREATE (s:Subject {id: '${noun}', pos: 'n', definition: '${definition}'}) RETURN s;`   
+            await this.database.runQuery(query);
         }
 
-        return {noun, query, indefiniteArticle, determiner};
+        return {noun, indefiniteArticle, determiner};
     }
     
 }

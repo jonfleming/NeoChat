@@ -11,9 +11,10 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\index.js",
+            "program": "${workspaceFolder}\\micRecognize.js",
+            "args":["micStreamRecognize"],
             "console": "externalTerminal",
-            "env":{"username": "neo4j", "password":"neo4j"}
+            "env":{"username": "neo4j", "password":"neo4j", "AUDIODEV":"0", "DEBUG":"record"}
         }
     ]
 }

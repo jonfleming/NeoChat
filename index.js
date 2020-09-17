@@ -1,3 +1,5 @@
+const express = require('express');
+const app = express();
 const readline = require('readline');
 const sentenceClassifier = require('./modules/sentenceClassifier.js');
 const neo4j = require('./modules/neo4j');
@@ -9,9 +11,34 @@ let limit = 5;
 async function run(sentence) {	
 	const parsedInput = new sentenceClassifier(sentence, database, limit);
 
-	if (parsedInput.sentenceType === 'unknown')
-		return;
+	switch (parsedInput.sentenceType) {
+		case 'unknown':
+			parsedInput.handler = parsedInput.questionHandler;
+			await getWhatIs(parsedInput);
+			break;
+		case 'whatIs':
+			await getWhatIs(parsedInput);
+			break;
+		case 'isA':
+			await saveFact(parsedInput);
+			break;
+		default:
+			break;
+	}
 
+	input.prompt();
+}
+
+async function saveFact(parsedInput) {
+	const { noun, indefiniteArticle, determiner } = await parsedInput.handler();
+	const word = new sentenceClassifier(noun, database, limit);
+	word.handler = parsedInput.questionHandler;
+
+	console.log('Your fact has been added');
+	getWhatIs(word);
+}
+
+async function getWhatIs(parsedInput) {
 	const {noun, query, indefiniteArticle} = await parsedInput.handler();
 
 	try {
@@ -22,18 +49,17 @@ async function run(sentence) {
 			return;
 		}
 
+		let i = 1;
 		records.forEach((record) => {
 			const definition = record._fields[0].properties.definition;
 			const hasDeterminer = definition.startsWith('a') | definition.startsWith('the');
 			const prefix = hasDeterminer ? `${indefiniteArticle}${noun} is` : `${indefiniteArticle}${noun} is a`;
-			console.log(`${prefix} ${definition}`);
+			console.log(`${i++} ${prefix} ${definition}`);
 		});
 
 	} catch (err) {
 		console.error(err);
 	}
-
-	input.prompt();
 }
 
 input.on('line', (sentence) => {
@@ -48,6 +74,9 @@ input.on('line', (sentence) => {
 				console.log(`limit set to ${limit}`);
 				input.prompt();
 			}
+			break;
+		case '':
+			input.prompt();
 			break;
 		default:
 			run(sentence);

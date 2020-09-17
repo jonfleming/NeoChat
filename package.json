@@ -9,6 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "neo4j-driver": "^4.1.2"
+    "@google-cloud/speech": "^4.1.2",
+    "express": "^4.17.1",
+    "neo4j-driver": "^4.1.2",
+    "node-record-lpcm16": "^1.0.1",
+    "yargs": "^16.0.3"
   }
 }

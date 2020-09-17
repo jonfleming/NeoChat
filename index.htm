@@ -49,6 +49,7 @@
 					result.innerHTML = "";
 					for (const res of event.results) {
 						const text = document.createTextNode(res[0].transcript);
+						console.log('Transcript:', text);
 						const p = document.createElement("p");
 						if (res.isFinal) {
 							p.classList.add("final");
