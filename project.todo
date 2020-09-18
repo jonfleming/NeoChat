@@ -1,0 +1,14 @@
+UI:
+☐ Create tests
+☐ Create a transcript element that will hold the ongoing conversation
+☐ Capture 'final' and copy to 'transcript'
+☐ Use xmlhttprequest response.  Add to transcript.
+
+Neo4j:
+☐ Create a VM (EC2) with neo4j image
+☐ ssh to clone wordnet_conceptnet_neo4j
+☐ run python script
+☐ import generated files to neo4j
+
+NeoChat:
+☐ Handle other sentence types
