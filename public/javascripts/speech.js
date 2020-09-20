@@ -51,15 +51,16 @@ window.addEventListener("DOMContentLoaded", () => {
 
 function sendInput() {
     var text = document.getElementsByClassName("final")[0].innerText;
-    var http = new XMLHttpRequest();
+    var req = new XMLHttpRequest();
     var url = "http://localhost:3000/input?text=" + text;
 
-    window.location.href = url;
-    // http.open("GET", url);
-    // http.send();
+    //window.location.href = url;
+    req.open("GET", url);
+    req.send();
 
-    // http.onreadystatechange = (e) => {
-    //     var response = http.responseText;
-    //     console.log("Response:", response);
-    // }
+    req.onreadystatechange = (e) => {
+        var JsonResponse = req.responseJSON;
+
+        console.log("Response:", response);
+    }
 }

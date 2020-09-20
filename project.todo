@@ -1,5 +1,5 @@
 UI:
-☐ Create tests
+✔ Create tests @done (9/19/2020, 11:05:04 PM)
 ☐ Create a transcript element that will hold the ongoing conversation
 ☐ Capture 'final' and copy to 'transcript'
 ☐ Use xmlhttprequest response.  Add to transcript.

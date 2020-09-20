@@ -1,35 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>@model.title</title>
-    <link rel="stylesheet" href="/stylesheets/style.css" />
-  </head>
-  <body>
-    <header>
-      <h1>@model.title</h1>
-    </header>
-    <main>
-      @html.block('content')
-      <button id="button">Start listening</button>
-      <p class="message">@model.message</p>
-      <div id="result"></div>
-      <p id="message" hidden aria-hidden="true">
-        Your browser does not support Speech Recognition. Sorry.
-      </p>
-      @if(model.reply){
-        <dl id="reply">@model.reply.forEach(function(item){
-          <li>@item</li>
-        })</dl>
-      }
-    </main>
-    <footer>
-      <p><a href="https://fleming.ai">fleming.ai</a></p>
-    </footer>
-	<script src="/javascripts/speech.js">
-	</script>
+<html>
+<head>
+  <meta>
+  <title>@model.title</title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+  @html.block('content')
 </body>
 </html>
+
 

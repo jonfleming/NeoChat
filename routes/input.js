@@ -46,8 +46,8 @@ async function saveFact(parsedInput) {
 }
 
 async function getWhatIs(parsedInput) {
-	const {noun, query, indefiniteArticle} = await parsedInput.handler();
-
+	const { noun, query, indefiniteArticle } = await parsedInput.handler();
+	
 	try {
 		const records = await database.runQuery(query);
 
@@ -60,10 +60,8 @@ async function getWhatIs(parsedInput) {
 		records.forEach((record) => {
 			const definition = record._fields[0].properties.definition;
 			const hasDeterminer = definition.startsWith('a') | definition.startsWith('the');
-      const prefix = hasDeterminer ? `${indefiniteArticle}${noun} is` : `${indefiniteArticle}${noun} is a`;
-      reply.push(`${prefix} ${definition}`);
-      
-		message = `${i++} ${prefix} ${definition}`;
+			const prefix = hasDeterminer ? `${indefiniteArticle}${noun} is` : `${indefiniteArticle}${noun} is a`;
+			reply.push(`${prefix} ${definition}`);
 		});
 
 	} catch (err) {
@@ -89,7 +87,7 @@ async function processInput(res, req) {
       break;
   }
   
-  res.render('index', {title, message, reply});
+  res.json({message, reply});
 }
 
 async function exit() {

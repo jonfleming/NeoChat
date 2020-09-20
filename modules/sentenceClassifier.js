@@ -27,12 +27,12 @@ class sentenceClassifier {
     
     getIndefiniteArticle(startsWith) {
         const n=(new Set(['a','e','i','o','u'])).has(startsWith) ? 'n' : '';
-        return `a${n} `;
+        return `a${n} `;    
     }
 
     hasDeterminer(phrase) {
-        return phrase.startsWith('an') | phrase.startsWith('a') | phrase.startsWith('the') |
-        phrase.startsWith('An') | phrase.startsWith('A') | phrase.startsWith('The');
+        return phrase.startsWith('an ') | phrase.startsWith('a ') | phrase.startsWith('the ') |
+        phrase.startsWith('An ') | phrase.startsWith('A ') | phrase.startsWith('The ');
 
     }
 
@@ -40,6 +40,11 @@ class sentenceClassifier {
         let a = phrase.split(' ');
         let determiner = a.shift();
         let noun = a.join(' ');
+
+        if (!noun) {
+            noun = determiner;
+            determiner = null;
+        }
 
         return {noun, determiner};
     }
