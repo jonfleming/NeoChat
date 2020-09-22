@@ -128,7 +128,7 @@ function textToSpeech(text) {
     // if not then select the first voice
     for (var i = 0; i < available_voices.length; i++) {
         //    alert(available_voices[i].lang + ' ' + available_voices[i].name);
-        if (available_voices[i].lang === 'en-US') {
+        if (available_voices[i].lang === 'en-US' && available_voices[i].name.indexOf('Zira') > -1) {
             english_voice = available_voices[i];
             break;
         }
