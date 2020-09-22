@@ -1,7 +1,24 @@
+
+function log(message) {
+    //console.log(message);
+    document.getElementById('transcript').value += '\nNotice:' + message + '\n';
+}
+
+function replacer(k, v) { if (v === undefined) { return null; } return v; };
+
+function vlog(voice) {
+    return {voiceURI: voice.voiceURI, name: voice.name, lang: voice.lang, default:voice.default};  
+}
+
+function rem(time) {
+    var now = Date.now();
+    return (time-now) / 1000;
+}
+
 window.addEventListener("DOMContentLoaded", () => {
     const button = document.getElementById("button");
     const result = document.getElementById("result");
-    const reply = document.getElementById("reply");
+    const transcript = document.getElementById("transcript");
     const main = document.getElementsByTagName("main")[0];
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
@@ -23,7 +40,6 @@ window.addEventListener("DOMContentLoaded", () => {
             recognition.stop();
             button.textContent = "Start listening";
             main.classList.remove("speaking");
-            sendInput();
         };
         const onResult = event => {
             result.innerHTML = "";
@@ -35,8 +51,9 @@ window.addEventListener("DOMContentLoaded", () => {
                     p.classList.add("final");
                 }
                 p.appendChild(text);
-                result.appendChild(p);
+                result.appendChild(p);                
             }
+            sendInput();
         };
         recognition.continuous = true;
         recognition.interimResults = true;
@@ -54,13 +71,78 @@ function sendInput() {
     var req = new XMLHttpRequest();
     var url = "http://localhost:3000/input?text=" + text;
 
-    //window.location.href = url;
+    transcript.value += 'User: ' + text + '\n'; 
+    
+    req.onreadystatechange = function(e) {
+        if (this.readyState === 4 && this.status === 200) {
+            var response = JSON.parse(this.responseText);
+            if (Array.isArray(response.reply)) {
+                response.reply.forEach(item => {
+                    transcript.value += '\nAI: ' + item;
+                    textToSpeech(item);
+                });
+            } else {
+                transcript.value += 'No response for AI\n'; 
+            }
+            transcript.value += '\n'; 
+        }
+    }
+
+    req.responseType = 'text';
     req.open("GET", url);
     req.send();
+}
 
-    req.onreadystatechange = (e) => {
-        var JsonResponse = req.responseJSON;
+// list of languages is probably not loaded, wait for it
+if (window.speechSynthesis.getVoices().length == 0) {
+    window.speechSynthesis.addEventListener('voiceschanged', function() {
+        log('voiceschanged');
+        available_voices = window.speechSynthesis.getVoices();
+    });
+} else {
+    log('no voiceschanged');
+    available_voices = window.speechSynthesis.getVoices();
+}
+function textToSpeech(text) {
+    // get all voices that browser offers
+    var available_voices = window.speechSynthesis.getVoices();
+    var english_voice = '';
 
-        console.log("Response:", response);
+    // find voice by language locale "en-US"
+    // if not then select the first voice
+    for (var i = 0; i < available_voices.length; i++) {
+        //    alert(available_voices[i].lang + ' ' + available_voices[i].name);
+        if (available_voices[i].lang === 'en-US') {
+            english_voice = available_voices[i];
+            break;
+        }
     }
+    
+    //log('english_voice' + JSON.stringify(vlog(english_voice), replacer, 4));
+  
+    if (english_voice === '') {
+        english_voice = available_voices[0];
+        log('english_voice' + JSON.stringify(vlog(english_voice), replacer, 4));
+    }
+  
+    // new SpeechSynthesisUtterance object
+    var utter = new SpeechSynthesisUtterance();
+    utter.rate = 1;
+    utter.pitch = 0.5;
+    utter.text = text;
+    utter.voice = english_voice;
+
+    // event after text has been spoken
+    utter.onend = function() {
+        //      alert('Speech has finished');
+    }
+
+    // speak
+    window.speechSynthesis.speak(utter);
+}
+
+function say(id) {
+    var text = document.getElementById(id).value;
+    log('say:' + text);
+    textToSpeech(text);
 }

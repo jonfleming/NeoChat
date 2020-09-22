@@ -8,11 +8,12 @@
       <button id="button">Start listening</button>
       <p class="message">@model.message</p>
       <div id="result"></div>
+      <!--<p class='final'>what is Bob</p>-->
       <p id="message" hidden aria-hidden="true">
         Your browser does not support Speech Recognition. Sorry.
       </p>
       <h2>Transcript</h2>
-      <textarea id="transcript"></textarea>      
+      <textarea id="transcript" rows="20" cols="80"></textarea>      
     </main>
     <footer>
       <p><a href="https://fleming.ai">fleming.ai</a></p>

@@ -87,7 +87,7 @@ async function processInput(res, req) {
       break;
   }
   
-  res.json({message, reply});
+  res.	json({message, reply});
 }
 
 async function exit() {

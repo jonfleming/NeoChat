@@ -4,12 +4,12 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Run NeoChat on port 3000",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}\\bin\\www",
-            "env":{"username": "neo4j", "password":"neo4j"}
+            "env":["neouri":"neo4j://jonfleming.net:7687", "neousername":"neo4j","neopassword":"neo4j"]
         },
         {
             "name": "Debug Jest Tests",
