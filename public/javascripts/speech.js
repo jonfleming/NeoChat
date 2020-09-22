@@ -22,6 +22,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const main = document.getElementsByTagName("main")[0];
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    let last = '';
 
     if (typeof SpeechRecognition === "undefined") {
         button.remove();
@@ -35,11 +36,13 @@ window.addEventListener("DOMContentLoaded", () => {
             recognition.start();
             button.textContent = "Stop listening";
             main.classList.add("speaking");
+            listening = true;
         };
         const stop = () => {
             recognition.stop();
             button.textContent = "Start listening";
             main.classList.remove("speaking");
+            listening = false;
         };
         const onResult = event => {
             result.innerHTML = "";
@@ -53,45 +56,57 @@ window.addEventListener("DOMContentLoaded", () => {
                 p.appendChild(text);
                 result.appendChild(p);                
             }
-            sendInput();
         };
+        const onsoundend = event => {
+            var final = document.getElementsByClassName("final");
+            if (final.length > 0) {
+                var text = final[0].innerText;
+                if (text !== last) {
+                    sendInput(text);
+                    last = text;
+                    result.innerHTML = "";
+                    stop();
+                }
+            }
+        }
+
         recognition.continuous = true;
         recognition.interimResults = true;
         recognition.addEventListener("result", onResult);
+        recognition.addEventListener("result", onsoundend);
 
         button.addEventListener("click", () => {
             listening ? stop() : start();
-            listening = !listening;
         });
+
+        function sendInput(text) {
+            var req = new XMLHttpRequest();
+            var url = document.location.href + "input?text=" + text;
+        
+            transcript.value += 'User: ' + text + '\n'; 
+            
+            req.onreadystatechange = function(e) {
+                if (this.readyState === 4 && this.status === 200) {
+                    var response = JSON.parse(this.responseText);
+                    if (Array.isArray(response.reply)) {
+                        response.reply.forEach(item => {
+                            transcript.value += '\nAI: ' + item;
+                            textToSpeech(item);
+                        });
+                    } else {
+                        transcript.value += 'No response for AI\n'; 
+                    }
+                    transcript.value += '\n'; 
+                }
+            }
+        
+            req.responseType = 'text';
+            req.open("GET", url);
+            req.send();
+        }
     }
 });
 
-function sendInput() {
-    var text = document.getElementsByClassName("final")[0].innerText;
-    var req = new XMLHttpRequest();
-    var url = "http://localhost:3000/input?text=" + text;
-
-    transcript.value += 'User: ' + text + '\n'; 
-    
-    req.onreadystatechange = function(e) {
-        if (this.readyState === 4 && this.status === 200) {
-            var response = JSON.parse(this.responseText);
-            if (Array.isArray(response.reply)) {
-                response.reply.forEach(item => {
-                    transcript.value += '\nAI: ' + item;
-                    textToSpeech(item);
-                });
-            } else {
-                transcript.value += 'No response for AI\n'; 
-            }
-            transcript.value += '\n'; 
-        }
-    }
-
-    req.responseType = 'text';
-    req.open("GET", url);
-    req.send();
-}
 
 // list of languages is probably not loaded, wait for it
 if (window.speechSynthesis.getVoices().length == 0) {
@@ -103,6 +118,7 @@ if (window.speechSynthesis.getVoices().length == 0) {
     log('no voiceschanged');
     available_voices = window.speechSynthesis.getVoices();
 }
+
 function textToSpeech(text) {
     // get all voices that browser offers
     var available_voices = window.speechSynthesis.getVoices();
@@ -133,8 +149,9 @@ function textToSpeech(text) {
     utter.voice = english_voice;
 
     // event after text has been spoken
-    utter.onend = function() {
-        //      alert('Speech has finished');
+    utter.onend = function () {
+        // resume listening
+        document.getElementById("button").click();
     }
 
     // speak
