@@ -1,7 +1,7 @@
 
 function log(message) {
     //console.log(message);
-    document.getElementById('transcript').value += '\nNotice:' + message + '\n';
+    document.getElementById('log').value += '\n' + message + '\n';
 }
 
 function replacer(k, v) { if (v === undefined) { return null; } return v; };
@@ -33,35 +33,40 @@ window.addEventListener("DOMContentLoaded", () => {
         let listening = false;
         const recognition = new SpeechRecognition();
         const start = () => {
+            log("recognition.start");
             recognition.start();
             button.textContent = "Stop listening";
             main.classList.add("speaking");
             listening = true;
         };
         const stop = () => {
+            log("recognition.stop");
             recognition.stop();
             button.textContent = "Start listening";
             main.classList.remove("speaking");
             listening = false;
         };
         const onResult = event => {
+            log("onResult " + event.results.length);
             result.innerHTML = "";
             for (const res of event.results) {
-                const text = document.createTextNode(res[0].transcript);
-                console.log('Transcript:', text);
+                const text = document.createTextNode(res[0].transcript);                
                 const p = document.createElement("p");
                 if (res.isFinal) {
                     p.classList.add("final");
-                }
+                }                
                 p.appendChild(text);
                 result.appendChild(p);                
+                log(`Transcript: ${res[0].transcript} final: ${res.isFinal}`);
             }
         };
         const onsoundend = event => {
+            log(`onSoundEnd last: ${last}`);
             var final = document.getElementsByClassName("final");
             if (final.length > 0) {
                 var text = final[0].innerText;
                 if (text !== last) {
+                    log(`sendInput final: ${text}`);
                     sendInput(text);
                     last = text;
                     result.innerHTML = "";
@@ -85,12 +90,13 @@ window.addEventListener("DOMContentLoaded", () => {
         
             transcript.value += 'User: ' + text + '\n'; 
             
-            req.onreadystatechange = function(e) {
+            req.onreadystatechange = function (e) {
+                log(`readystatechange: ${this.readyState} status: ${this.status}`);
                 if (this.readyState === 4 && this.status === 200) {
                     var response = JSON.parse(this.responseText);
                     if (Array.isArray(response.reply)) {
                         response.reply.forEach(item => {
-                            transcript.value += '\nAI: ' + item;
+                            transcript.value += '\nMelissa: ' + item;
                             textToSpeech(item);
                         });
                     } else {
@@ -100,8 +106,10 @@ window.addEventListener("DOMContentLoaded", () => {
                 }
             }
         
+            log(`Request: ${url}`);
             req.responseType = 'text';
             req.open("GET", url);
+            req.timeout = 5000;
             req.send();
         }
     }

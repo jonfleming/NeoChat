@@ -9,6 +9,7 @@ let reply;
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
+	console.log(`request: ${req.url}`);
   processInput(res, req);
 });
 
@@ -16,7 +17,7 @@ const database = new neo4j('wordnetconceptnet');
 let limit = 5;
 
 async function run(sentence) {	
-	const parsedInput = new sentenceClassifier(sentence, database, limit);
+  const parsedInput = new sentenceClassifier(sentence, database, limit);
   message = '';
   reply = [];
 

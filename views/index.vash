@@ -14,6 +14,9 @@
       <h2>Transcript</h2>
       <textarea id="transcript" rows="20" cols="80"></textarea>      
     </main>
+    <div>
+      <textarea id="log" rows="20" cols="80"></textarea>
+    </div>
     <footer>
       <p><a href="https://fleming.ai">fleming.ai</a></p>
     </footer>

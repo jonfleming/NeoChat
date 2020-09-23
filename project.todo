@@ -21,3 +21,8 @@ Hosting:
 NeoChat:
 ☐ Handle other sentence types
 ✔ Add voice response @done (9/21/2020, 10:41:36 PM)
+☐ Convert "my" to "your", etc. in response
+☐ Who am I speaking to? 
+☐ Pass user's name to front end
+☐ Change AI to Melissa
+☐ Handle contractions
