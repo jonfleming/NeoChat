@@ -141,8 +141,6 @@ function textToSpeech(text) {
             break;
         }
     }
-    
-    //log('english_voice' + JSON.stringify(vlog(english_voice), replacer, 4));
   
     if (english_voice === '') {
         english_voice = available_voices[0];

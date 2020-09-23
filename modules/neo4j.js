@@ -1,7 +1,7 @@
 const neo4jDriver = require('neo4j-driver');
-const username = 'neo4j'; //process.env.neousername;
-const password = 'neo4j'; //process.env.neopassword;
-const uri = 'bolt://jonfleming.net:7687'; //process.env.neouri;
+const username = process.env.neousername;
+const password = process.env.neopassword;
+const uri = process.env.neouri;
 
 class neo4j {
 
