@@ -11,7 +11,7 @@ var httpServer = http.createServer((req, res) => {
   res.statusCode = 302;
   res.setHeader('Location', 'https://' + req.headers.host + req.url)
   res.end();
-}).listen(80);
+}).listen(process.env.PORT || 80);
 
 const options = {
   key: fs.readFileSync('certificates/key.pem'),
