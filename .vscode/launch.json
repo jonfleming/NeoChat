@@ -1,20 +1,28 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Run NeoChat on port 3000",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\micRecognize.js",
-            "args":["micStreamRecognize"],
-            "console": "externalTerminal",
-            "env":{"username": "neo4j", "password":"neo4j", "AUDIODEV":"0", "DEBUG":"record"}
-        }
+            "program": "${workspaceFolder}\\bin\\www",
+            "env":["neouri":"neo4j://jonfleming.net:7687", "neousername":"neo4j","neopassword":"neo4j"]
+        },
+        {
+            "name": "Debug Jest Tests",
+            "type": "node",
+            "request": "launch",
+            "runtimeArgs": [
+              "--inspect-brk",
+              "${workspaceRoot}/node_modules/jest/bin/jest.js",
+              "--runInBand"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "port": 9229
+          }
     ]
 }

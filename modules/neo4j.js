@@ -1,13 +1,13 @@
 const neo4jDriver = require('neo4j-driver');
-const username = process.env.username;
-const password = process.env.password;
-const uri = 'neo4j://localhost:7687';
+const username = process.env.neousername;
+const password = process.env.neopassword;
+const uri = process.env.neouri;
 
 class neo4j {
 
     constructor(database) {
         this.database = database;
-        this.driver = neo4jDriver.driver(uri, neo4jDriver.auth.basic(username, password));
+        this.driver = neo4jDriver.driver(uri, neo4jDriver.auth.basic(username, password),/* {encrypted: 'ENCRYPTION_ON'}*/);
         this.session = this.driver.session({database: database});
     }
 
